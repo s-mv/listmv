@@ -12,6 +12,6 @@ build:
 
 install: # linux-only
 	@make build
-	@sudo cp lib/$(TITLE).o /usr/lib/$(TITLE).o
+	@sudo cp lib/$(TITLE).so /usr/lib/$(TITLE).so
 	@sudo cp lib/$(TITLE).h /usr/include/$(TITLE).h
 	@echo "Libary has been installed."

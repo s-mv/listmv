@@ -1,14 +1,12 @@
 # listmv
 A library that adds list/dictionary support to your C program.
 
-TODO: everything.
+TODO: GC.
 
 # Example code
 Lists:
 ```c
 #include <stdio.h>
-// turn the list GC off
-#define LISTMV_GC false
 #include <listmv.h>
 
 int main() {
@@ -21,15 +19,14 @@ int main() {
     printf("Hello, %s\n", listmv_str_unwrap(name));
 
     listmv_delete(name); // if the GC is on this is taken care of
-}
 
+    return 0;
+}
 ```
 
 Dicts:
 ```c
 #include <stdio.h>
-// turn the list GC off
-#define LISTMV_GC false
 #include <listmv.h>
 
 int main() {
@@ -42,6 +39,8 @@ int main() {
     dictmv_delete(dict); // if the GC is on this is taken care of
 }
 ```
+
+**To use the GC** just use the `start_gc()` function. Note that there's no `stop_gc` for a reason.
 
 # Build and Install
 TODO
