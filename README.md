@@ -1,7 +1,7 @@
 # listmv
 A library that adds list/dictionary support to your C program.
 
-TODO: GC.
+TODO: most things, but mainly GC.
 
 # Example code
 Lists:
@@ -10,8 +10,7 @@ Lists:
 #include <listmv.h>
 
 int main() {
-    listmv(char) name;
-    listmv_init(name);
+    listmv(char) name = listmv_init();
 
     listmv_push_array(name, "smv\n");
 
@@ -30,7 +29,7 @@ Dicts:
 #include <listmv.h>
 
 int main() {
-    dictmv(int, float) dict;
+    dictmv(int, float) dict = dictmv_init();
     dictmv_push(dict, 420, 6.9);
     dictmv_push(dict, 122, 8.5);
     float CGPA = dictmv_get_key_for(dict, 420); // 6.9
