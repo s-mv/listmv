@@ -26,7 +26,8 @@ void *__smv_listmv_grow_array(void *data, int new_size);
     /* if data is too small increase its length  */                            \
     if (__smv__list__.cap == __smv__list__.len) {                              \
       __smv__list__.cap = (__smv__list__.cap < 8) ? 8 : __smv__list__.cap * 2; \
-      __smv__list__.data = __smv_listmv_grow_array(__smv__list__.data, __smv__list__.cap);          \
+      __smv__list__.data =                                                     \
+          __smv_listmv_grow_array(__smv__list__.data, __smv__list__.cap);      \
       /* TODO check if there's an issue */                                     \
     }                                                                          \
     __smv__list__.data[__smv__list__.len++] = __smv__data__;                   \
@@ -40,6 +41,13 @@ void *__smv_listmv_grow_array(void *data, int new_size);
     for (int i = 0; i < len; i++)                                            \
       listmv_push(__smv__list__, __smv__data__arr__[i]);                     \
   } while (0)
+
+// TODO probably add some sort of error instead of just returning a 0?
+#define listmv_i(__smv__list__, __smv__i__) \
+  (__smv__i__ < __smv__list__.len ? __smv__list__.data[__smv__i__] : 0);
+
+// MAYBE this needs more stuff but for now this is enough
+#define listmv_str_unwrap(__smv__list__) ((char *)__smv__list__.data);
 
 #define listmv_delete(__smv__list__) free(__smv__list__.data);
 
@@ -55,6 +63,10 @@ void *__smv_listmv_grow_array(void *data, int new_size);
 #define new_dictmv() \
   {}
 
+// TODO no overwrites: this is somewhat flawed
+// example: if someone uses a dictmv(string, int) and someone pushed for the key
+//          "hello" twice it SHOULD overwrite but that doesn't happen
+// maybe a different structure is required for dictmv structs...
 #define dictmv_push(__smv__dict__, __smv__key__data__, __smv__value__data__) \
   do {                                                                       \
     listmv_push(__smv__dict__.key, __smv__key__data__);                      \
