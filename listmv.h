@@ -2,6 +2,9 @@
 #define smv_listmv_header_h
 #include <stdlib.h>
 
+void listmv_start_gc();  // TODO
+void *__smv_listmv_grow_array(void *data, int new_size);
+
 #define listmv(__smv__type__) \
   struct {                    \
     __smv__type__ *data;      \
@@ -14,31 +17,29 @@
   {}
 
 // incomplete, TODO
-#define listmv_push(__smv__list__, __smv__data__)                             \
-  do {                                                                        \
-    /* if sizeof data and list type aren't same, abort TODO find a better way \
-     * to deal with this, since a char (for example) can be cast to int       \
-     */                                                                       \
-    if (sizeof(__smv__data__) == sizeof(*(__smv__list__.data))) {             \
-      if (__smv__list__.cap <= __smv__list__.len) {                           \
-        if (__smv__list__.cap > 0) {                                          \
-          __smv__list__.data =                                                \
-              realloc(__smv__list__.data,                                     \
-                      __smv__list__.cap * sizeof(__smv__data__) * 2);         \
-          __smv__list__.cap *= 2;                                             \
-        } else {                                                              \
-          __smv__list__.data = malloc(8 * sizeof(__smv__data__));             \
-          __smv__list__.cap = 8;                                              \
-          __smv__list__.len = 0;                                              \
-        }                                                                     \
-      }                                                                       \
-      __smv__list__.data[__smv__list__.len++] = __smv__data__;                \
-    }                                                                         \
-  } while (0);
+#define listmv_push(__smv__list__, __smv__data__)                              \
+  do {                                                                         \
+    /* if sizeof data and list type aren't same, abort - TODO find a better    \
+     * way to deal with this, since a char (for example) can be cast to int    \
+     */                                                                        \
+    if (sizeof(__smv__data__) != sizeof(*(__smv__list__.data))) break;         \
+    /* if data is too small increase its length  */                            \
+    if (__smv__list__.cap == __smv__list__.len) {                              \
+      __smv__list__.cap = (__smv__list__.cap < 8) ? 8 : __smv__list__.cap * 2; \
+      __smv__list__.data = __smv_listmv_grow_array(__smv__list__.data, __smv__list__.cap);          \
+      /* TODO check if there's an issue */                                     \
+    }                                                                          \
+    __smv__list__.data[__smv__list__.len++] = __smv__data__;                   \
+  } while (0)
 
-#define listmv_push_array(__smv__list__, __smv__data__arr__) \
-  do {                                                       \
-  } while (0);  // TODO
+// TODO
+#define listmv_push_array(__smv__list__, __smv__data__arr__)                 \
+  do {                                                                       \
+    if (sizeof(*__smv__data__arr__) != sizeof(*(__smv__list__.data))) break; \
+    int len = sizeof(__smv__data__arr__) / sizeof(*__smv__data__arr__);      \
+    for (int i = 0; i < len; i++)                                            \
+      listmv_push(__smv__list__, __smv__data__arr__[i]);                     \
+  } while (0)
 
 #define listmv_delete(__smv__list__) free(__smv__list__.data);
 
@@ -63,6 +64,10 @@
     __smv__dict__.cap = __smv__dict__.key.cap;                               \
   } while (0);
 
-void start_gc();  // TODO
+#define dictmv_delete(__smv__list__) \
+  do {                               \
+    free(__smv__list__.key);         \
+    free(__smv__list__.value);       \
+  } while (0)
 
 #endif

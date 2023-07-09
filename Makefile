@@ -15,3 +15,7 @@ install: # linux-only
 	@sudo cp lib/$(TITLE).so /usr/lib/$(TITLE).so
 	@sudo cp lib/$(TITLE).h /usr/include/$(TITLE).h
 	@echo "Libary has been installed."
+
+# this is for my personal debugging
+test:
+	$(CC) examples/list.c listmv.c -I . -o examples/list && ./examples/list 
