@@ -18,7 +18,7 @@ int main() {
     // in theory this only works with char lists
     printf("Hello, %s\n", listmv_str_unwrap(name));
 
-    listmv_delete(name); // if the GC is on this is taken care of
+    listmv_free(name); // if the GC is on this is taken care of
 
     return 0;
 }
@@ -36,7 +36,7 @@ int main() {
     float CGPA = dictmv_get_key_for(dict, 420); // 6.9
     int ID = dictmv_get_value_for(dict, 3.5);   // 133
 
-    dictmv_delete(dict); // if the GC is on this is taken care of
+    dictmv_free(dict); // if the GC is on this is taken care of
 }
 ```
 

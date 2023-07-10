@@ -1,10 +1,11 @@
 TITLE = listmv
 CC = clang
+VER = c99
 
 build:
 	@echo "-------- BUILDING --------"
 	@mkdir -p lib
-	@$(CC) $(TITLE).c -shared -o lib/$(TITLE).so
+	@$(CC) $(TITLE).c -shared -std=$(VER) -o lib/$(TITLE).so
 	@cp $(TITLE).h lib/$(TITLE).h
 	@echo "Done."
 	@echo "Header and source at ./lib"
@@ -18,4 +19,4 @@ install: # linux-only
 
 # this is for my personal debugging
 test:
-	$(CC) examples/list.c listmv.c -I . -o examples/list && ./examples/list 
+	$(CC) examples/list.c listmv.c -I . -o examples/list && valgrind ./examples/list 

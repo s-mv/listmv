@@ -4,8 +4,7 @@
 
 static int gc_initialised = 0;
 
-// there's a good reason I'm not using lismv(void *)
-
+// I'm not using listmv(void *) for a reason
 typedef struct DataArray {
   void **data;
   int cap;
@@ -29,22 +28,13 @@ void listmv_start_gc() {
 }
 
 void *__smv_listmv_grow_array(void *data, int new_size) {
+  if (gc_initialised) {
+    data = realloc(data, new_size);
+    return data;
+  }
+
   data = realloc(data, new_size);
   return data;
 }
 
-/*
- * TODO
- * also need to explain what is exactly going on here I guess
- */
-void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len) {
-  
-  return data;
-}
-
-int __gc_started() { return gc_initialised; }
-
-void exit_gc() {
-  free(free_ids.data);
-  free(array.data);
-}
+void exit_gc() { free(array.data); }
