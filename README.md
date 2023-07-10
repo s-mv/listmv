@@ -1,7 +1,10 @@
 # listmv
 A library that adds list/dictionary support to your C program.
 
-TODO: most things, but mainly GC.
+TODO:
+- dictmv functionality
+- GC
+- special utility functions header (listmv_utils.h or something?)
 
 # Example code
 Lists:
@@ -43,7 +46,18 @@ int main() {
 **To use the GC** just use the `start_gc()` function. Note that there's no `stop_gc` for a reason.
 
 # Build and Install
-TODO
+The GC and part of dictmv is still a work in progress. However you can still build using
+```sh
+make build
+```
+to generate headers and object at ./lib
+
+Or install globally (Linux only) using
+```sh
+make install
+```
+to use it in any of your projects.
+
 
 ### Notes
 Work in progress.
