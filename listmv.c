@@ -38,11 +38,10 @@ void *__smv_listmv_grow_array(void *data, int new_size) {
  * also need to explain what is exactly going on here I guess
  */
 void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len) {
-  
-  return data;
+    return data;
 }
 
-int __gc_started() { return gc_initialised; }
+int __smv_listmv_gc_started() { return gc_initialised; }
 
 void exit_gc() {
   free(free_ids.data);
