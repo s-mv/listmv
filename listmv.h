@@ -3,17 +3,18 @@
 
 #include <stdlib.h>
 
+void listmv_start_gc();  // TODO
+int __smv_listmv_gc_started();
+void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len);  // TODO
+
+/* dictmv declaration */
+
 #define listmv(_type) \
   struct {            \
     _type *data;      \
     int len;          \
     int cap;          \
   }
-
-void listmv_start_gc();  // TODO
-int __smv_listmv_gc_started();
-void *__smv_listmv_grow_array(void *data, int new_size);
-void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len);  // TODO
 
 /* back-end helper functions */
 
@@ -23,7 +24,7 @@ void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len);  // TODO
       _list.data =                                                        \
           __smv_listmv_grow_array_gc(_list.data, &_list.cap, &_list.len); \
     else                                                                  \
-      _list.data = __smv_listmv_grow_array(_list.data, _list.cap);        \
+      _list.data = realloc(_list.data, _list.cap * sizeof(*_list.data));  \
   } while (0)
 
 /* listmv functions */
@@ -48,17 +49,16 @@ void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len);  // TODO
   } while (0)
 
 // TODO
-#define listmv_push_array(_list, _array)                         \
-  do {                                                           \
-    if (sizeof(*_array) != sizeof(*(_list.data))) break;         \
-    int len = sizeof(_array) / sizeof(*_array);                  \
-    for (int i = 0; i < len; i++) listmv_push(_list, _array[i]); \
+#define listmv_push_array(_list, _array, _len)                    \
+  do {                                                            \
+    if (sizeof(*_array) != sizeof(*(_list.data))) break;          \
+    for (int i = 0; i < _len; i++) listmv_push(_list, _array[i]); \
   } while (0)
 
 #define listmv_delete(_list, _index)                      \
   do {                                                    \
     for (int i = _index; i < _list.len - 1; i++) {        \
-      _list.data[i] = __smv__list.data[i + 1];            \
+      _list.data[i] = _list.data[i + 1];                  \
     }                                                     \
     _list.len--;                                          \
     /* decrease capacity if the length is not required */ \
@@ -69,8 +69,9 @@ void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len);  // TODO
   } while (0)
 
 // TODO probably add some sort of error instead of just returning a 0?
-#define listmv_index(_list, _index) \
-  (_index < _list.len ? _list.data[_index] : 0)
+#define listmv_i(_list, _index) (_index < _list.len ? _list.data[_index] : 0)
+
+#define listmv_len(_list) (_list.len)
 
 // MAYBE this needs more stuff but for now this is enough
 #define listmv_str_unwrap(_list) ((char *)_list.data)
@@ -79,9 +80,17 @@ void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len);  // TODO
 
 /* listmv helper functions */
 
-#define listmv_slice(_list)
+// ALL TODO
 
-/* dictmv defintion */
+#ifdef __super_comment_trigger
+#define listmv_slice(_newlist, _list, _i1, _i2)                            \
+  do {                                                                     \
+    if (_i1 < 0 || _i1 >= _i2 || _i2 >= _list.len) break;                  \
+    for (int i = _i1; i <= _i2; i++) listmv_push(_newlist, _list.data[i]); \
+  } while (0) /* dictmv defintion */
+#endif
+
+/* dictmv declaration */
 
 #define dictmv(_key_type, _value_type) \
   struct {                             \
