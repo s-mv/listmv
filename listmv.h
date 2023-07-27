@@ -5,7 +5,8 @@
 
 void listmv_start_gc();  // TODO
 int __smv_listmv_gc_started();
-void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len);  // TODO
+void *__smv_listmv_grow_array_gc(void *data, int *cap, int size,
+                                 int *i);  // TODO
 
 /* dictmv declaration */
 
@@ -14,17 +15,19 @@ void *__smv_listmv_grow_array_gc(void *data, int *cap, int *len);  // TODO
     _type *data;      \
     int len;          \
     int cap;          \
+    /* private: */    \
+    int __i;          \
   }
 
 /* back-end helper functions */
 
-#define __smv_listmv_grow_list(_list)                                     \
-  do {                                                                    \
-    if (__smv_listmv_gc_started())                                        \
-      _list.data =                                                        \
-          __smv_listmv_grow_array_gc(_list.data, &_list.cap, &_list.len); \
-    else                                                                  \
-      _list.data = realloc(_list.data, _list.cap * sizeof(*_list.data));  \
+#define __smv_listmv_grow_list(_list)                                    \
+  do {                                                                   \
+    if (__smv_listmv_gc_started())                                       \
+      _list.data = __smv_listmv_grow_array_gc(                           \
+          _list.data, &_list.cap, sizeof(*_list.data), &_list.__i);      \
+    else                                                                 \
+      _list.data = realloc(_list.data, _list.cap * sizeof(*_list.data)); \
   } while (0)
 
 /* listmv functions */
