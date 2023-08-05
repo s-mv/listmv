@@ -14,9 +14,9 @@ Lists:
 #include <listmv.h>
 
 int main() {
-    listmv(char) name = listmv_init();
+    listmv(char) name = new_listmv();
 
-    listmv_push_array(name, "smv\n");
+    listmv_push_array(name, "smv\n", 5);
 
     printf("char at 2 %c\n", listmv_i(name, 2)); // v
     // in theory this only works with char lists
@@ -34,7 +34,7 @@ Dicts (majorly TODO): This is how dictionaries could be used once I implement th
 #include <listmv.h>
 
 int main() {
-    dictmv(int, float) dict = dictmv_init();
+    dictmv(int, float) dict = new_dictmv();
     dictmv_push(dict, 420, 6.9);
     dictmv_push(dict, 122, 8.5);
     float CGPA = dictmv_get_key_for(dict, 420); // 6.9
