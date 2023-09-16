@@ -34,7 +34,7 @@ Dicts (majorly TODO): This is how dictionaries could be used once I implement th
 #include <listmv.h>
 
 int main() {
-    dictmv(int, float) dict = new_dictmv();
+    dictmv dict = new_dictmv(int, float);
     dictmv_push(dict, 420, 6.9);
     dictmv_push(dict, 122, 8.5);
     float CGPA = dictmv_get_key_for(dict, 420); // 6.9

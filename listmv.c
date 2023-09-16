@@ -49,7 +49,8 @@ void listmv_push(listmv *ls, void *data) {
 
   memcpy(listmv_ptr_at(ls, ls->len++), temp, ls->__size);
 
-  printf("%i %i %p %p\n", listmv_i(ls, ls->len - 1), *(int *)temp, listmv_ptr_at(ls, ls->len - 1), temp);
+  printf("%i %i %p %p\n", listmv_i(ls, ls->len - 1), *(int *)temp,
+         listmv_ptr_at(ls, ls->len - 1), temp);
   free(temp);
 }
 
@@ -72,8 +73,28 @@ void listmv_pop(listmv *ls, int i) {
   }
 }
 
-void *listmv_i(listmv *ls, int i) { return *(char *)(ls->data + i * ls->__size); }
+void *listmv_i(listmv *ls, int i) {
+  return *(char *)(ls->data + i * ls->__size);
+}
 void *listmv_ptr_at(listmv *ls, int i) { return ls->data + i * ls->__size; }
+
+/* dictmv functions */
+// majorly TODO
+
+void dictmv_push(dictmv *dc, void *key, void *value) {
+  if (list_indexof()) listmv_push(&dc->keys, key);
+  listmv_push(&dc->values, value);
+  /* TODO: make this cleaner */
+  dc->len = dc->keys.len;
+  dc->cap = dc->keys.cap;
+}
+
+void dictmv_free(dictmv *dc) {
+  listmv_free(&dc->keys);
+  listmv_free(&dc->values);
+}
+
+/* the real stuff */
 
 /*
  * TODO

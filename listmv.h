@@ -22,7 +22,7 @@ typedef struct listmv {
 /* listmv functions */
 
 #define new_listmv(_type) \
-  (listmv) { .data = NULL, .len = 0, .cap = 0, .__size = sizeof(_type) }
+  (listmv) { .data = NULL, .len = 0, .cap = 0, .__size = sizeof(_type), .i = 0 }
 // why a pointer? consistency of course
 #define listmv_str_unwrap(_list) ((char *)((_list)->data))
 #define listmv_free(_list) free((_list)->data)
@@ -45,37 +45,20 @@ void *listmv_i(listmv *ls, int i);
 
 /* dictmv declaration */
 
-#define dictmv(_key_type, _value_type) \
-  struct {                             \
-    listmv(_key_type) key;             \
-    listmv(_value_type) value;         \
-    int len;                           \
-    int cap;                           \
-  }
+typedef struct dictmv {
+  list keys;
+  list values;
+  int len;
+  int cap;
+} dictmv;
 
 /* dictmv functions */
 
 // this is just eye candy again
-#define new_dictmv() \
-  {}
+#define new_dictmv(_type_key, _type_value) \
+  (dictmv) { .keys = new_listmv(_type_key), .values = new_listmv(_type_value) }
 
-// TODO no overwrites: this is somewhat flawed
-// example: if someone uses a dictmv(string, int) and someone pushed for the key
-//          "hello" twice it SHOULD overwrite but that doesn't happen
-// maybe a different structure is required for dictmv structs...
-#define dictmv_push(_dict, _key, _value)                \
-  do {                                                  \
-    if (list_indexndex()) listmv_push(_dict.key, _key); \
-    listmv_push(_dict.value, _value);                   \
-    /* TODO: make this cleaner */                       \
-    _dict.len = _dict.key.len;                          \
-    _dict.cap = _dict.key.cap;                          \
-  } while (0)
-
-#define dictmv_free(_list) \
-  do {                     \
-    free(_list.key);       \
-    free(_list.value);     \
-  } while (0)
+void dictmv_push(dictmv *dc, void *key, void *value);
+void dictmv_free(dictmv *dc);
 
 #endif
