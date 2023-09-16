@@ -23,7 +23,7 @@ static inline void __smv_listmv_grow_list(listmv *ls) {
     ls->data = __smv_listmv_grow_array_gc(ls->data, &ls->cap, sizeof(*ls->data),
                                           &ls->__i);
   else
-    ls->data = realloc(ls->data, ls->cap * sizeof(*ls->data));
+    ls->data = realloc(ls->data, ls->cap * ls->__size);
 }
 
 void listmv_start_gc() {
@@ -44,11 +44,12 @@ void listmv_push(listmv *ls, void *data) {
     __smv_listmv_grow_list(ls);
   }
 
-  void *temp = malloc(sizeof(char));
+  void *temp = malloc(ls->__size * sizeof(char));
   *(char *)temp = data;
 
   memcpy(listmv_ptr_at(ls, ls->len++), temp, ls->__size);
 
+  printf("%i %i %p %p\n", listmv_i(ls, ls->len - 1), *(int *)temp, listmv_ptr_at(ls, ls->len - 1), temp);
   free(temp);
 }
 
