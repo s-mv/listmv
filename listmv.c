@@ -1,6 +1,6 @@
 #include "listmv.h"
 
-#include "stdio.h"
+#include <string.h>
 
 // there's a good reason I'm not using lismv(void *)
 // TODO, find a way to DO listmv(void *)
@@ -16,6 +16,15 @@ static PointerArray pointers = {};
 static int gc_initialised = 0;
 
 static void exit_gc();
+static void *listmv_ptr_at(listmv *ls, int i);
+
+static inline void __smv_listmv_grow_list(listmv *ls) {
+  if (__smv_listmv_gc_started())
+    ls->data = __smv_listmv_grow_array_gc(ls->data, &ls->cap, sizeof(*ls->data),
+                                          &ls->__i);
+  else
+    ls->data = realloc(ls->data, ls->cap * sizeof(*ls->data));
+}
 
 void listmv_start_gc() {
   pointers.cap = 8;
@@ -27,9 +36,47 @@ void listmv_start_gc() {
   atexit(exit_gc);
 }
 
+/* listmv functions */
+
+void listmv_push(listmv *ls, void *data) {
+  if (ls->cap == ls->len) {
+    ls->cap = (ls->cap < 8) ? 8 : ls->cap * 2;
+    __smv_listmv_grow_list(ls);
+  }
+
+  void *temp = malloc(sizeof(char));
+  *(char *)temp = data;
+
+  memcpy(listmv_ptr_at(ls, ls->len++), temp, ls->__size);
+
+  free(temp);
+}
+
+void listmv_push_array(listmv *ls, void *array, int len) {
+  if (ls->cap <= ls->len + len) {
+    ls->cap = (ls->cap < 8) ? 8 : ls->cap * 2;
+    __smv_listmv_grow_list(ls);
+  }
+
+  for (int i = 0; i < len; i++) listmv_push(ls, array + i * ls->__size);
+}
+
+void listmv_pop(listmv *ls, int i) {
+  memmove(listmv_ptr_at(ls, i), listmv_ptr_at(ls, i + 1), i * ls->__size);
+
+  ls->len--; /* decrease capacity if the length is not required */
+  if (ls->len * 2 < ls->cap) {
+    ls->cap = (ls->cap <= 16 ? 8 : ls->cap / 2);
+    __smv_listmv_grow_list(ls);
+  }
+}
+
+void *listmv_i(listmv *ls, int i) { return *(char *)(ls->data + i * ls->__size); }
+void *listmv_ptr_at(listmv *ls, int i) { return ls->data + i * ls->__size; }
+
 /*
  * TODO
- * DETAILED EXPLANATION
+ * DETAILED EXPLANATION (for future me haha)
  */
 
 // NOTE: size is the size of *data

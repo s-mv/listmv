@@ -10,81 +10,31 @@ void *__smv_listmv_grow_array_gc(void *data, int *cap, int size,
 
 /* dictmv declaration */
 
-#define listmv(_type) \
-  struct {            \
-    _type *data;      \
-    int len;          \
-    int cap;          \
-    /* private: */    \
-    int __i;          \
-  }
-
-/* back-end helper functions */
-
-#define __smv_listmv_grow_list(_list)                                    \
-  do {                                                                   \
-    if (__smv_listmv_gc_started())                                       \
-      _list.data = __smv_listmv_grow_array_gc(                           \
-          _list.data, &_list.cap, sizeof(*_list.data), &_list.__i);      \
-    else                                                                 \
-      _list.data = realloc(_list.data, _list.cap * sizeof(*_list.data)); \
-  } while (0)
+typedef struct listmv {
+  void *data;
+  int len;
+  int cap;
+  // "private"
+  int __size;
+  int __i;
+} listmv;
 
 /* listmv functions */
 
-// this is just eye candy lol
-#define new_listmv() \
-  {}
+#define new_listmv(_type) \
+  (listmv) { .data = NULL, .len = 0, .cap = 0, .__size = sizeof(_type) }
+// why a pointer? consistency of course
+#define listmv_str_unwrap(_list) ((char *)((_list)->data))
+#define listmv_free(_list) free((_list)->data)
 
-// incomplete, TODO
-#define listmv_push(_list, _data)                                           \
-  do {                                                                      \
-    /* if sizeof data and list type aren't same, abort - TODO find a better \
-     * way to deal with this, since a char (for example) can be cast to int \
-     */                                                                     \
-    if (sizeof(_data) != sizeof(*(_list.data))) break;                      \
-    /* if data is too small increase its length  */                         \
-    if (_list.cap == _list.len) {                                           \
-      _list.cap = (_list.cap < 8) ? 8 : _list.cap * 2;                      \
-      __smv_listmv_grow_list(_list);                                        \
-    }                                                                       \
-    _list.data[_list.len++] = _data;                                        \
-  } while (0)
-
-// TODO
-#define listmv_push_array(_list, _array, _len)                    \
-  do {                                                            \
-    if (sizeof(*_array) != sizeof(*(_list.data))) break;          \
-    for (int i = 0; i < _len; i++) listmv_push(_list, _array[i]); \
-  } while (0)
-
-#define listmv_delete(_list, _index)                      \
-  do {                                                    \
-    for (int i = _index; i < _list.len - 1; i++) {        \
-      _list.data[i] = _list.data[i + 1];                  \
-    }                                                     \
-    _list.len--;                                          \
-    /* decrease capacity if the length is not required */ \
-    if (_list.len * 2 < _list.cap) {                      \
-      _list.cap = (_list.cap <= 16 ? 8 : _list.cap / 2);  \
-      __smv_listmv_grow_list(_list);                      \
-    }                                                     \
-  } while (0)
-
-// TODO probably add some sort of error instead of just returning a 0?
-#define listmv_i(_list, _index) (_index < _list.len ? _list.data[_index] : 0)
-
-#define listmv_len(_list) (_list.len)
-
-// MAYBE this needs more stuff but for now this is enough
-#define listmv_str_unwrap(_list) ((char *)_list.data)
-
-#define listmv_free(_list) free(_list.data)
+void listmv_push(listmv *ls, void *data);
+void listmv_push_array(listmv *ls, void *array, int len);
+void listmv_pop(listmv *ls, int i);
+void *listmv_i(listmv *ls, int i);
 
 /* listmv helper functions */
 
 // ALL TODO
-
 #ifdef __super_comment_trigger
 #define listmv_slice(_newlist, _list, _i1, _i2)                            \
   do {                                                                     \

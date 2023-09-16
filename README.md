@@ -14,11 +14,11 @@ Lists:
 #include <listmv.h>
 
 int main() {
-    listmv(char) name = new_listmv();
+    listmv name = new_listmv(char);
 
-    listmv_push_array(name, "smv\n", 5);
+    listmv_push_array(&name, "smv\n", 5);
 
-    printf("char at 2 %c\n", listmv_i(name, 2)); // v
+    printf("char at 2 %c\n", listmv_i(&name, 2)); // v
     // in theory this only works with char lists
     printf("Hello, %s\n", listmv_str_unwrap(name));
 

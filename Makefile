@@ -19,4 +19,4 @@ install: # linux-only
 
 # this is for my personal debugging
 test:
-	$(CC) examples/list.c listmv.c -I . -o examples/list && valgrind ./examples/list 
+	$(CC) examples/list.c listmv.c -I . -o examples/list
