@@ -15,14 +15,14 @@ typedef struct listmv {
   int len;
   int cap;
   // "private"
-  int __size;
-  int __i;
+  int _size;
+  int _i;
 } listmv;
 
 /* listmv functions */
 
 #define new_listmv(_type) \
-  (listmv) { .data = NULL, .len = 0, .cap = 0, .__size = sizeof(_type), .i = 0 }
+  (listmv) { .data = NULL, .len = 0, .cap = 0, ._size = sizeof(_type), .i = 0 }
 // why a pointer? consistency of course
 #define listmv_str_unwrap(_list) ((char *)((_list)->data))
 #define listmv_free(_list) free((_list)->data)
@@ -35,7 +35,7 @@ void *listmv_i(listmv *ls, int i);
 /* listmv helper functions */
 
 // ALL TODO
-#ifdef __super_comment_trigger
+#ifdef _super_comment_trigger
 #define listmv_slice(_newlist, _list, _i1, _i2)                            \
   do {                                                                     \
     if (_i1 < 0 || _i1 >= _i2 || _i2 >= _list.len) break;                  \
@@ -46,19 +46,24 @@ void *listmv_i(listmv *ls, int i);
 /* dictmv declaration */
 
 typedef struct dictmv {
-  list keys;
-  list values;
+  listmv keys;
+  listmv values;
   int len;
   int cap;
 } dictmv;
 
 /* dictmv functions */
+// majorly TODO
 
 // this is just eye candy again
 #define new_dictmv(_type_key, _type_value) \
   (dictmv) { .keys = new_listmv(_type_key), .values = new_listmv(_type_value) }
 
+// probably better than just leaving them around
+#define _todo
+#ifndef _todo
 void dictmv_push(dictmv *dc, void *key, void *value);
 void dictmv_free(dictmv *dc);
+#endif
 
 #endif

@@ -21,9 +21,9 @@ static void *listmv_ptr_at(listmv *ls, int i);
 static inline void __smv_listmv_grow_list(listmv *ls) {
   if (__smv_listmv_gc_started())
     ls->data = __smv_listmv_grow_array_gc(ls->data, &ls->cap, sizeof(*ls->data),
-                                          &ls->__i);
+                                          &ls->_i);
   else
-    ls->data = realloc(ls->data, ls->cap * ls->__size);
+    ls->data = realloc(ls->data, ls->cap * ls->_size);
 }
 
 void listmv_start_gc() {
@@ -44,13 +44,10 @@ void listmv_push(listmv *ls, void *data) {
     __smv_listmv_grow_list(ls);
   }
 
-  void *temp = malloc(ls->__size * sizeof(char));
+  void *temp = malloc(ls->_size * sizeof(char));
   *(char *)temp = data;
+  memcpy(listmv_ptr_at(ls, ls->len++), temp, ls->_size);
 
-  memcpy(listmv_ptr_at(ls, ls->len++), temp, ls->__size);
-
-  printf("%i %i %p %p\n", listmv_i(ls, ls->len - 1), *(int *)temp,
-         listmv_ptr_at(ls, ls->len - 1), temp);
   free(temp);
 }
 
@@ -60,11 +57,11 @@ void listmv_push_array(listmv *ls, void *array, int len) {
     __smv_listmv_grow_list(ls);
   }
 
-  for (int i = 0; i < len; i++) listmv_push(ls, array + i * ls->__size);
+  for (int i = 0; i < len; i++) listmv_push(ls, array + i * ls->_size);
 }
 
 void listmv_pop(listmv *ls, int i) {
-  memmove(listmv_ptr_at(ls, i), listmv_ptr_at(ls, i + 1), i * ls->__size);
+  memmove(listmv_ptr_at(ls, i), listmv_ptr_at(ls, i + 1), i * ls->_size);
 
   ls->len--; /* decrease capacity if the length is not required */
   if (ls->len * 2 < ls->cap) {
@@ -74,15 +71,17 @@ void listmv_pop(listmv *ls, int i) {
 }
 
 void *listmv_i(listmv *ls, int i) {
-  return *(char *)(ls->data + i * ls->__size);
+  return (void *)(*(char *)(ls->data + i * ls->_size));
 }
-void *listmv_ptr_at(listmv *ls, int i) { return ls->data + i * ls->__size; }
+
+void *listmv_ptr_at(listmv *ls, int i) { return ls->data + i * ls->_size; }
 
 /* dictmv functions */
 // majorly TODO
 
 void dictmv_push(dictmv *dc, void *key, void *value) {
-  if (list_indexof()) listmv_push(&dc->keys, key);
+  // dictmv_indexof(): TODO
+  if (dictmv_indexof()) listmv_push(&dc->keys, key);
   listmv_push(&dc->values, value);
   /* TODO: make this cleaner */
   dc->len = dc->keys.len;
