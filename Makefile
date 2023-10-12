@@ -15,7 +15,7 @@ install: # linux-only
 	@make build
 	@sudo cp lib/$(TITLE).so /usr/lib/$(TITLE).so
 	@sudo cp lib/$(TITLE).h /usr/include/$(TITLE).h
-	@echo "Libary has been installed."
+	@echo "Library has been installed."
 
 # this is for my personal debugging
 test:
