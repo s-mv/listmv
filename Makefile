@@ -1,5 +1,5 @@
 TITLE = listmv
-CC = clang
+CC ?= clang
 VER = c99
 
 build:
