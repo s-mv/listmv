@@ -1,5 +1,5 @@
 # listmv
-A library that adds list/dictionary support to your C program.
+A header-only library that adds list/dictionary support to your C program.
 
 ## Contents
 - [Example code](#example-code)
